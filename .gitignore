@@ -1,3 +1,4 @@
 TODO
 *.todo
 __pycache__/
+*.pyc
