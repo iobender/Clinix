@@ -4,15 +4,28 @@
 import clinix
 import os
 
-class LsOutput(clinix.ClinixOutput):
-    """
-    class LsOutput(ClinixOutput)
+class LsCommand(clinix.ClinixCommand):
 
-    represents output from ls
-    """
+    def __init__(self, args, options):
+        super().__init__(options)
 
-    def __init__(self, output):
-        self.output = output
+        # if no arguments given to ls, assume only 
+        # argument is current directory (like $ls)
+        if not args:
+            args = ['.']
+        self.filenames = args
+    def parse_options(self, options):
+        pass
+
+
+    def _ls_one(self, arg):
+        # TODO: use namedtuples
+        if os.path.isfile(arg):
+            return ('file', arg)
+        elif os.path.isdir:
+            return ('directory', arg, os.listdir(arg))
+        else:
+            raise Exception(arg + ': no such file or directory')
 
     def __str__(self):
         def singlestr(arg):
@@ -20,7 +33,8 @@ class LsOutput(clinix.ClinixOutput):
                 return arg[1]
             elif arg[0] == 'directory':
                 return arg[1] + ':\n\t' + '\n\t'.join(arg[2])
-        return '\n'.join(singlestr(arg) for arg in self.output)
+        result = [self._ls_one(arg) for arg in self.filenames]
+        return '\n'.join(singlestr(arg) for arg in result)
 
 def ls(*args, **options):
     """
@@ -41,18 +55,5 @@ def ls(*args, **options):
         
     """
 
-    # if no arguments given to ls, assume only 
-    # argument is current directory (like $ls)
-    if not args:
-        args = ['.']
+    return LsCommand(args, options)
 
-    result = [_ls_arg(arg, **options) for arg in args]
-    return LsOutput(result)
-
-def _ls_arg(arg, **options):
-    if os.path.isfile(arg):
-        return ('file', arg)
-    elif os.path.isdir:
-        return ('directory', arg, os.listdir(arg))
-    else:
-        raise Exception(arg + ': no such file or directory')

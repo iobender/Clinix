@@ -3,17 +3,17 @@
 
 import clinix
 
-class EchoOutput(clinix.ClinixOutput):
-    """
-    class EchoOutput(ClinixOutput)
+class EchoCommand(clinix.ClinixCommand):
 
-    represents output from echo
-    """
-    def __init__(self, output):
-        self.output = output
+    def __init__(self, args, options):
+        super().__init__(options)
+        self.args = args
+
+    def parse_options(self, options):
+        pass
 
     def __str__(self):
-        return self.output
+        return '\n'.join(str(arg) for arg in self.args)
 
 def echo(*args, **options):
     """
@@ -25,5 +25,4 @@ def echo(*args, **options):
     Valid options (with defaults):
         
     """
-    result = '\n'.join(map(str, args))
-    return EchoOutput(result)
+    return EchoCommand(args, options)

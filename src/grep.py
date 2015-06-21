@@ -8,25 +8,47 @@ from collections import namedtuple
 GrepSuccess = namedtuple('GrepSuccess', 'file line linenum')
 GrepError = namedtuple('GrepError', 'file reason')
 
-class GrepOutput(clinix.ClinixOutput):
+class GrepCommand(clinix.ClinixCommand):
     """
-    class GrepOutput(ClinixOutput)
+    class GrepCommand(ClinixCommand)
 
-    represents the output of the grep command
+    reprsents a grep command
     """
 
-    def __init__(self, result, options):
-        self.result = [res for fileresult in result for res in fileresult]
-        self.set_options(options)
+    def __init__(self, pattern, args, options):
+        super().__init__(options)
+        self.compile_pattern(pattern)
+        self.filenames = args
 
-    def set_options(self, options):
-        self.linenums = options.get('n', False) or options.get('linenumber', False)
-        
+    def parse_options(self, options):
+        self.ignorecase = options.get('i', False) or options.get('ignorecase', False)
+        self.linenumber = options.get('n', False) or options.get('linenumber', False)
+
+    def compile_pattern(self, pattern):
+        flags = 0
+        if self.ignorecase:
+            flags |= re.IGNORECASE
+        self.pattern = re.compile(pattern, flags)
+
+    def grep_all(self):
+        for filename in self.filenames:
+            yield from self.grep_file(filename)
+
+    def grep_file(self, filename):
+        try:
+            with open(filename) as file:
+                for linenum, line in enumerate(file, 1):
+                    line = line.rstrip()
+                    if re.search(self.pattern, line):
+                        yield GrepSuccess(filename, line, linenum)
+        except IOError as e:
+            yield GrepError(filename, e.strerror)
+
     def __str__(self):
         def singlestr(arg):
             if isinstance(arg, GrepSuccess):
                 result = ''
-                if self.linenums:
+                if self.linenumber:
                     result += str(arg.linenum) + ':'
                 result += arg.line
                 return result
@@ -34,7 +56,9 @@ class GrepOutput(clinix.ClinixOutput):
                 return 'grep: ' + arg.file + ': ' + arg.reason
             else:
                 raise Exception("Don't know how to handle grep result " + arg.__class__.__name__)
-        return '\n'.join(singlestr(arg) for arg in self.result)
+
+        result = self.grep_all()
+        return '\n'.join(singlestr(arg) for arg in result)
 
 def grep(pattern, *args, **options):
     """
@@ -47,22 +71,10 @@ def grep(pattern, *args, **options):
     options is a dict of options to grep
     Valid options (with defaults):
         
+        i=False, ignorecase=False
+            if True, does a case-insensitive search
         n=False, linenumber=False:
             if True, report the line numbers of matching lines as well
     """
 
-    regex = re.compile(pattern)
-    result = [_grep_file(regex, filename) for filename in args]
-    return GrepOutput(result, options)
-
-def _grep_file(regex, filename, **options):
-    results = []
-    try:
-        with open(filename) as file:
-            for linenum, line in enumerate(file):
-                line = line.rstrip()
-                if re.search(regex, line):
-                    results.append(GrepSuccess(filename, line, linenum))
-        return results
-    except IOError as e:
-        return [GrepError(filename, e.strerror)]
+    return GrepCommand(pattern, args, options)
