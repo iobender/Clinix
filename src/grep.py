@@ -16,35 +16,76 @@ class GrepCommand(clinix.ClinixCommand):
     """
 
     def __init__(self, pattern, args, options):
+        """
+        __init__(self, pattern, args, options)
+
+        pattern is a regular expression to search each line for
+        args is a list of files to search
+        options is a dict of options to grep
+        """
+
         super().__init__(options)
-        self.compile_pattern(pattern)
+        self._compile_pattern(pattern)
         self.filenames = args
 
-    def parse_options(self, options):
+    def _parse_options(self, options):
+        """
+        _parse_options(self, options)
+
+        processes options to grep
+        valid options are i, ignorecase, n, and linenumber
+        """
+
         self.ignorecase = options.get('i', False) or options.get('ignorecase', False)
         self.linenumber = options.get('n', False) or options.get('linenumber', False)
 
-    def compile_pattern(self, pattern):
+    def _compile_pattern(self, pattern):
+        """
+        _compile_pattern(self, pattern)
+
+        compiles the given regex pattern, considering the options given
+        """
+
         flags = 0
         if self.ignorecase:
             flags |= re.IGNORECASE
         self.pattern = re.compile(pattern, flags)
 
-    def grep_all(self):
-        for filename in self.filenames:
-            yield from self.grep_file(filename)
+    def _grep_all(self):
+        """
+        _grep_all(self)
 
-    def grep_file(self, filename):
+        yields each match from each file provided
+        """
+        for filename in self.filenames:
+            yield from self._grep_file(filename)
+
+    def _grep_file(self, filename):
+        """
+
+        _grep_file(self, filename)
+        tries to open filename, and yields all matching lines
+        with some info about the lines
+        if the file couldn't be opened, returns an error
+        """
         try:
             with open(filename) as file:
-                for linenum, line in enumerate(file, 1):
-                    line = line.rstrip()
+                for linenum, line in enumerate(file, 1): # count line numbers from 1
+                    line = line.rstrip() # remove trailing newline
                     if re.search(self.pattern, line):
                         yield GrepSuccess(filename, line, linenum)
         except IOError as e:
             yield GrepError(filename, e.strerror)
 
     def __str__(self):
+        """
+        __str__(self)
+
+        Returns the output of this grep command
+        matches are printed on their own line, possibly with some ifo depending on the optoins given
+        errors are reported with the filename and the error
+        """
+
         def singlestr(arg):
             if isinstance(arg, GrepSuccess):
                 result = ''
@@ -57,7 +98,7 @@ class GrepCommand(clinix.ClinixCommand):
             else:
                 raise Exception("Don't know how to handle grep result " + arg.__class__.__name__)
 
-        result = self.grep_all()
+        result = self._grep_all()
         return '\n'.join(singlestr(arg) for arg in result)
 
 def grep(pattern, *args, **options):
