@@ -38,6 +38,7 @@ class GrepCommand(clinix.ClinixCommand):
 
         self.ignorecase = options.get('i', False) or options.get('ignorecase', False)
         self.linenumber = options.get('n', False) or options.get('linenumber', False)
+        self.invertmatch = options.get('v', False) or options.get('invertmatch', False)
 
     def _compile_pattern(self, pattern):
         """
@@ -72,7 +73,7 @@ class GrepCommand(clinix.ClinixCommand):
             with open(filename) as file:
                 for linenum, line in enumerate(file, 1): # count line numbers from 1
                     line = line.rstrip() # remove trailing newline
-                    if re.search(self.pattern, line):
+                    if bool(re.search(self.pattern, line)) ^ self.invertmatch:
                         yield GrepSuccess(filename, line, linenum)
         except IOError as e:
             yield GrepError(filename, e.strerror)
