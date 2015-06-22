@@ -52,21 +52,23 @@ class ClinixCommand:
 
         Create a new ClinixCommand, with the given options as a dict
         Set the commands stdin, stdout, and stderr
-        And call parse_options to set the command's options, which should
+        And call _parse_options to set the command's options, which should
         be handled by the subclass that invoked this
         """
+
         self.stdin = sys.stdin
         self.stdout = sys.stdout
         self.stderr = sys.stderr
-        self.parse_options(options)
+        self._parse_options(options)
 
-    def parse_options(self, options):
+    def _parse_options(self, options):
         """
-        parse_options(self, options)
+        _parse_options(self, options)
 
         Interprets the options dict passed as keyword args to this command
         Should throw an error if an unrecognized option is given
         """
+
         pass
 
     def __gt__(self, new_stdout):
@@ -78,6 +80,7 @@ class ClinixCommand:
         If it is a filename, the file will be created if it 
         does not yet exist, or overwritten if it does
         """
+
         self.stdout = new_stdout
         return self
 
@@ -89,6 +92,7 @@ class ClinixCommand:
         Writes to the proper output channel as well
         calls __str__ on itself to determine what to write
         """
+
         if isinstance(self.stdout, str):
             outfile = open(self.stdout, 'w') # TODO: close
         elif self.stdout == sys.stdout:
@@ -106,6 +110,7 @@ class ClinixCommand:
         (yes I know this is abuse of __repr__ but that's what it took
         to make this work in the REPL and in programs)
         """
+
         self.do()
         return ''
 
