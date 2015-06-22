@@ -117,6 +117,8 @@ def grep(pattern, *args, **options):
             if True, does a case-insensitive search
         n=False, linenumber=False:
             if True, report the line numbers of matching lines as well
+        v=False, invertmatch=False:
+            if True, selects lines not matching pattern instead
     """
 
     return GrepCommand(pattern, args, options)
