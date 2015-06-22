@@ -72,7 +72,7 @@ class GrepCommand(clinix.ClinixCommand):
         try:
             with open(filename) as file:
                 for linenum, line in enumerate(file, 1): # count line numbers from 1
-                    line = line.rstrip() # remove trailing newline
+                    line = line.rstrip('\n') # remove trailing newline
                     if bool(re.search(self.pattern, line)) ^ self.invertmatch:
                         yield GrepSuccess(filename, line, linenum)
         except IOError as e:
