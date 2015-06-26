@@ -28,7 +28,7 @@ class GrepCommand(clinix.ClinixCommand):
         self._compile_pattern(pattern)
         self.filenames = args
 
-    def _parse_options(self, options):
+    def parse_options(self, options):
         """
         _parse_options(self, options)
 
@@ -40,7 +40,7 @@ class GrepCommand(clinix.ClinixCommand):
         self.linenumber = options.get('n', False) or options.get('linenumber', False)
         self.invertmatch = options.get('v', False) or options.get('invertmatch', False)
 
-    def _compile_pattern(self, pattern):
+    def compile_pattern(self, pattern):
         """
         _compile_pattern(self, pattern)
 
@@ -52,7 +52,7 @@ class GrepCommand(clinix.ClinixCommand):
             flags |= re.IGNORECASE
         self.pattern = re.compile(pattern, flags)
 
-    def _grep_all(self):
+    def grep_all(self):
         """
         _grep_all(self)
 
@@ -64,7 +64,7 @@ class GrepCommand(clinix.ClinixCommand):
         else:
             yield from self._grep_stdin()
 
-    def _grep_file(self, filename):
+    def grep_file(self, filename):
         """
         _grep_file(self, filename)
 
@@ -81,11 +81,11 @@ class GrepCommand(clinix.ClinixCommand):
         except IOError as e:
             yield GrepError(filename, e.strerror)
 
-    def _grep_line(self, line):
+    def grep_line(self, line):
         if bool(re.search(self.pattern, line)) ^ self.invertmatch:
             yield line
 
-    def _grep_stdin(self):
+    def grep_stdin(self):
         for linenum, line in enumerate(self.read_stdin().splitlines()):
             for line in self._grep_line(line):
                 yield GrepSuccess('<stdin>', line, linenum)

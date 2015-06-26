@@ -26,7 +26,7 @@ class LsCommand(clinix.ClinixCommand):
             args = ['.']
         self.filenames = args
 
-    def _parse_options(self, options):
+    def parse_options(self, options):
         """
         _parse_options(self, options)
 
@@ -35,7 +35,7 @@ class LsCommand(clinix.ClinixCommand):
 
         pass
 
-    def _ls_one(self, arg):
+    def ls_one(self, arg):
         """
         _ls_one(self, arg)
 

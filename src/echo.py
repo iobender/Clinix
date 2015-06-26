@@ -21,7 +21,7 @@ class EchoCommand(clinix.ClinixCommand):
         super().__init__(options)
         self.args = args
 
-    def _parse_options(self, options):
+    def parse_options(self, options):
         """
         _parse_options(self, options)
 

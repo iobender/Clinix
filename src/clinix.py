@@ -64,7 +64,7 @@ class ClinixCommand:
         self.stderr = sys.stderr
         self._parse_options(options)
 
-    def _parse_options(self, options):
+    def parse_options(self, options):
         """
         _parse_options(self, options)
 
