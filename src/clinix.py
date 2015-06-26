@@ -116,6 +116,19 @@ class ClinixCommand:
         self.overwrite_stdout = False
         return self
 
+    def __lt__(self, source):
+        """
+        __lt__(self, source)
+
+        comm() < 'input.txt'
+
+        Sets source to be this commands stdin. source should be a filename
+        The file will not be opened and read until the command is evaluated
+        """
+
+        self.stdin = InputType('file', source)
+        return self
+
     def __or__(self, source):
         """
         __or__(self, source)
@@ -123,6 +136,7 @@ class ClinixCommand:
         Only implemented because Python won't call __ror__ if two operands are of the same type
         All the logic occurs in __ror__
         """
+
         return source.__ror__(self)
 
     def __ror__(self, source):
@@ -156,12 +170,20 @@ class ClinixCommand:
         If we have been piped to, call str on the input source and use those lines
             (if a list was piped to use, call str on its elements and join with newlines)
         """
+
         if self.stdin.type == 'stdin':
             return self.stdin.source.read()
+        elif self.stdin.type == 'file':
+            try:
+                with open(self.stdin.source) as infile:
+                    return infile.read()
+            except IOError as e:
+                raise Exception('Error reading file ' + infile + ': ' + e.strerror)
         elif self.stdin.type == 'pipe':
+            source = self.stdin.source
             if isinstance(source, list) and not isinstance(source, str):
                 source = '\n'.join(source)
-            return str(self.stdin.source)
+            return str(source)
         else:
             raise Exception('Unknown stdin type: ' + self.stdin.type)
 
