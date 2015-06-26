@@ -43,7 +43,7 @@ class ClinixCommand:
     will create the file 'comment.txt' containing all lines starting with a # in 'blah.config'
 
     I have attempted to emulate existing *nix-like tools as best I could, but you should refer to
-    the docs for the actualy Clinix version of them for usage
+    the docs for the actual Clinix version of them for usage
     """
     
     def __init__(self, options):
@@ -76,12 +76,33 @@ class ClinixCommand:
         __gt__(self, new_stdout)
 
         Redirects the stdout of this command to new_stdout
-        New_stdout must be sys.stdout or a filename
+        new_stdout must be sys.stdout or a filename
         If it is a filename, the file will be created if it 
         does not yet exist, or overwritten if it does
+
+        Returns this command
         """
 
         self.stdout = new_stdout
+        self.overwrite_stdout = True
+        return self
+
+    def __ge__(self, new_stdout):
+        """
+        __ge__(self, new_stdout)
+
+        Redirects the stdout of this command to new_stdout
+        new_stdout must be sys.stdout or a filename
+        If it is a filename, the file will be appended to, and
+        created if it does not exist
+
+        Returns this command
+
+        Note that this syntax differs from most shells as
+        """
+
+        self.stdout = new_stdout
+        self.overwrite_stdout = False
         return self
 
     def do(self):
@@ -94,7 +115,8 @@ class ClinixCommand:
         """
 
         if isinstance(self.stdout, str):
-            outfile = open(self.stdout, 'w') # TODO: close
+            mode = 'w' if self.overwrite_stdout else 'a'
+            outfile = open(self.stdout, mode) # TODO: close
         elif self.stdout == sys.stdout:
             outfile = self.stdout
         else:
