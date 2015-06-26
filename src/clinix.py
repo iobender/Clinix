@@ -116,6 +116,15 @@ class ClinixCommand:
         self.overwrite_stdout = False
         return self
 
+    def __or__(self, source):
+        """
+        __or__(self, source)
+
+        Only implemented because Python won't call __ror__ if two operands are of the same type
+        All the logic occurs in __ror__
+        """
+        return source.__ror__(self)
+
     def __ror__(self, source):
         """
         __ror__(self, source)
@@ -132,20 +141,26 @@ class ClinixCommand:
 
         >>> x | comm()
 
-        If x is a list, comm's stdin is treated to be the result of calling str on
-        each of its elements and joining them with newlines.
-        Otherwise, str(x) is called and this is treated as comm's stdin
+        x will be translated into a string as evaluation time and treated as stdin
         """
 
-        if isinstance(source, list) and not isinstance(source, str):
-            source = '\n'.join(source)
         self.stdin = InputType('pipe', source)
         return self
 
     def read_stdin(self):
+        """
+        read_stdin(self)
+
+        Gets the value of this commands stdin
+        If it is actually stdin, just reads from stdin
+        If we have been piped to, call str on the input source and use those lines
+            (if a list was piped to use, call str on its elements and join with newlines)
+        """
         if self.stdin.type == 'stdin':
             return self.stdin.source.read()
         elif self.stdin.type == 'pipe':
+            if isinstance(source, list) and not isinstance(source, str):
+                source = '\n'.join(source)
             return str(self.stdin.source)
         else:
             raise Exception('Unknown stdin type: ' + self.stdin.type)
