@@ -56,15 +56,18 @@ class GrepCommand(clinix.ClinixCommand):
         """
         _grep_all(self)
 
-        yields each match from each file provided
+        yields each match from each file provided, or stdin if none provided
         """
-        for filename in self.filenames:
-            yield from self._grep_file(filename)
+        if self.filenames:
+            for filename in self.filenames:
+                yield from self._grep_file(filename)
+        else:
+            yield from self._grep_stdin()
 
     def _grep_file(self, filename):
         """
-
         _grep_file(self, filename)
+
         tries to open filename, and yields all matching lines
         with some info about the lines
         if the file couldn't be opened, returns an error
@@ -73,10 +76,19 @@ class GrepCommand(clinix.ClinixCommand):
             with open(filename) as file:
                 for linenum, line in enumerate(file, 1): # count line numbers from 1
                     line = line.rstrip('\n') # remove trailing newline
-                    if bool(re.search(self.pattern, line)) ^ self.invertmatch:
+                    for line in self._grep_line(line):
                         yield GrepSuccess(filename, line, linenum)
         except IOError as e:
             yield GrepError(filename, e.strerror)
+
+    def _grep_line(self, line):
+        if bool(re.search(self.pattern, line)) ^ self.invertmatch:
+            yield line
+
+    def _grep_stdin(self):
+        for linenum, line in enumerate(self.read_stdin().splitlines()):
+            for line in self._grep_line(line):
+                yield GrepSuccess('<stdin>', line, linenum)
 
     def __str__(self):
         """
