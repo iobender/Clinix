@@ -2,6 +2,9 @@
 
 import __main__
 import sys
+from collections import namedtuple
+
+InputType = namedtuple('InputType', 'type source')
 
 class ClinixCommand:
     """
@@ -56,7 +59,7 @@ class ClinixCommand:
         be handled by the subclass that invoked this
         """
 
-        self.stdin = sys.stdin
+        self.stdin = InputType('stdin', sys.stdin)
         self.stdout = sys.stdout
         self.stderr = sys.stderr
         self._parse_options(options)
@@ -75,6 +78,8 @@ class ClinixCommand:
         """
         __gt__(self, new_stdout)
 
+        >>> comm() > 'file.txt'
+
         Redirects the stdout of this command to new_stdout
         new_stdout must be sys.stdout or a filename
         If it is a filename, the file will be created if it 
@@ -91,6 +96,8 @@ class ClinixCommand:
         """
         __ge__(self, new_stdout)
 
+        >>> comm() >= 'file.txt'
+
         Redirects the stdout of this command to new_stdout
         new_stdout must be sys.stdout or a filename
         If it is a filename, the file will be appended to, and
@@ -98,12 +105,50 @@ class ClinixCommand:
 
         Returns this command
 
-        Note that this syntax differs from most shells as
+        Note that this syntax differs from most shells as it uses >= 
+        for appending to a file and not >>
+        This is because >> and > have different precedent levels 
+        (and more significantly | has a precedence level in between them)
+        but >= and > have the same precedence.
         """
 
         self.stdout = new_stdout
         self.overwrite_stdout = False
         return self
+
+    def __ror__(self, source):
+        """
+        __ror__(self, source)
+
+        Implements piping of commands. When comm1 is piped to comm2 like:
+
+        >>> comm1() | comm2() 
+
+        Then comm2's __ror__ is invoked (ClinixCommands should not implement __or__)
+        The input source of comm2 is set to be comm1, and comm2 is returned. 
+
+        Other types can also be piped to ClinixCommands (provided they don't implement __or__,
+        because if they do they will steal the operator for themselves)
+
+        >>> x | comm()
+
+        If x is a list, comm's stdin is treated to be the result of calling str on
+        each of its elements and joining them with newlines.
+        Otherwise, str(x) is called and this is treated as comm's stdin
+        """
+
+        if isinstance(source, list) and not isinstance(source, str):
+            source = '\n'.join(source)
+        self.stdin = InputType('pipe', source)
+        return self
+
+    def read_stdin(self):
+        if self.stdin.type == 'stdin':
+            return self.stdin.source.read()
+        elif self.stdin.type == 'pipe':
+            return str(self.stdin.source)
+        else:
+            raise Exception('Unknown stdin type: ' + self.stdin.type)
 
     def do(self):
         """
