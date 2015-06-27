@@ -88,8 +88,9 @@ class WcCommand(clinix.ClinixCommand):
         returns a Python representation of the result of this command;w
         """
 
-        if self.filenames:
-            return [self.wc_one(f) for f in self.filenames]
+        filenames = list(clinix.expand_files(self.filenames))
+        if filenames:
+            return [self.wc_one(f) for f in filenames]
         else:
             return [self.wc_stdin()]
     
@@ -100,6 +101,7 @@ class WcCommand(clinix.ClinixCommand):
         If more than one file given, output total as well
         """
 
+        # TODO: format vertically aligned
         def singlestr(arg):
             if isinstance(arg, WcSuccess):
                 return '{} {} {} {}'.format(

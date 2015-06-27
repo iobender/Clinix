@@ -68,8 +68,9 @@ class TacCommand(clinix.ClinixCommand):
         for tac, return the output of the given files, with the order of lines reversed
         """
 
-        if self.filenames:
-            return [self.tac_one(f) for f in self.filenames]
+        filenames = clinix.expand_files(self.filenames)
+        if filenames:
+            return [self.tac_one(f) for f in filenames]
         else:
             return [self.tac_stdin()]
 

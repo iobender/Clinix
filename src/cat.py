@@ -68,8 +68,9 @@ class CatCommand(clinix.ClinixCommand):
         returns a Python representation of the result of this command
         """
     
-        if self.filenames:
-            return [self.cat_one(f) for f in self.filenames]
+        filenames = clinix.expand_files(self.filenames)
+        if filenames:
+            return [self.cat_one(f) for f in filenames]
         else:
             return [self.cat_stdin()]
 

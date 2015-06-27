@@ -204,7 +204,7 @@ class ClinixCommand:
         self.do()
         return ''
 
-def expand_files(*filenames, **kwargs):
+def expand_files(filenames, **kwargs):
     """
     utility function for expanding a list of given files 
 

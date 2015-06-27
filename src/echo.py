@@ -30,7 +30,9 @@ class EchoCommand(clinix.ClinixCommand):
 
         for echo, just return's its arguments
         """
-        return self.args
+
+        args = list(clinix.expand_files(self.args))
+        return args
 
     def __str__(self):
         """

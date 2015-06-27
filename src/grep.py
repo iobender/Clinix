@@ -45,17 +45,6 @@ class GrepCommand(clinix.ClinixCommand):
             flags |= re.IGNORECASE
         self.pattern = re.compile(pattern, flags)
 
-    def grep_all(self):
-        """
-        yields each match from each file provided, or stdin if none provided
-        """
-
-        if self.filenames:
-            for filename in self.filenames:
-                yield from self.grep_file(filename)
-        else:
-            yield from self.grep_stdin()
-
     def grep_file(self, filename):
         """
         tries to open filename, and yields all matching lines
@@ -95,9 +84,15 @@ class GrepCommand(clinix.ClinixCommand):
         Returns a Python representation of the output of this command
 
         Returns a list of GrepSuccess and GrepError objects
+        yields each match from each file provided, or stdin if none provided
         """
 
-        return self.grep_all()
+        filenames = list(clinix.expand_files(self.filenames))
+        if filenames:
+            for filename in filenames:
+                yield from self.grep_file(filename)
+        else:
+            yield from self.grep_stdin()
 
     def __str__(self):
         """

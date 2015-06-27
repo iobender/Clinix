@@ -53,7 +53,8 @@ class LsCommand(clinix.ClinixCommand):
         Returns a list of tuples about files and directories
         """
         
-        return [self.ls_one(arg) for arg in self.filenames]
+        filenames = clinix.expand_files(self.filenames)
+        return [self.ls_one(arg) for arg in filenames]
 
     def __str__(self):
         """

@@ -66,8 +66,9 @@ class RevCommand(clinix.ClinixCommand):
         for rev, returns the output of its files with lines reversed
         """
 
-        if self.filenames:
-            return [self.rev_one(f) for f in self.filenames]
+        filenames = clinix.expand_files(self.filenames)
+        if filenames:
+            return [self.rev_one(f) for f in filenames]
         else:
             return [self.rev_stdin()]
 
