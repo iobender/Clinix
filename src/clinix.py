@@ -2,7 +2,9 @@
 
 import __main__
 import sys
+import os
 from collections import namedtuple, Iterable
+import glob
 
 InputType = namedtuple('InputType', 'type source')
 
@@ -217,4 +219,67 @@ class ClinixCommand:
 
         self.do()
         return ''
+
+def expand_files(*filenames, **kwargs):
+    """
+    expand_files(*filenames, **kwargs)
+    
+    utility function for expanding a list of given files 
+    globs can be expanded, and directories can be reversed on
+    options with defaults:
+        expandglob=True
+            if True, expand * to match any # of characters, and ? to match exactly one character
+            all filenames matching the given globs will be yielded. Ifa file doesn't contain * or ?, it will not be expanded
+        recusre=False
+            if True, expands to all files and directories under each directory given
+    """
+
+    for filename in filenames:
+        yield from expand_file(filename, **kwargs)
+
+def expand_file(filename, expandglob=True, recurse=False):
+    """
+    expand_file(filename, expandglob=True, recurse=False)
+
+    expands a single filename by glob or recursing
+    """
+
+    if expandglob and ('*' in filename or '?' in filename): # prevent non-globs from trying to be expanded
+        filenames = glob.glob(filename)
+    else:
+        filenames = [filename]
+    if recurse:
+        yield from recurse_files(filenames)
+    else:
+        for filename in filenames:
+            yield filename
+
+def recurse_files(filenames):
+    """
+    recurse_files(filenames)
+
+    expands to all files and directories under the given directories
+
+    for each file given, just yields that file
+    for each directory given, yields each file and directory in the given directory
+    """
+
+    for filename in filenames:
+        yield from recurse_file(filename)
+
+def recurse_file(filename):
+    """
+    recuse_file(filename)
+
+    expands to all files and directories under the given directory
+    
+    if a file is given, just yields that file
+    if a directory is given, yields each file and directory in the given directory
+    """
+    yield filename # os.walk doesn't yield the given file/dir
+    for path, dirs, files in os.walk(filename):
+        for d in dirs:
+            yield os.path.join(path, d)
+        for f in files:
+            yield os.path.join(path, f)
 
