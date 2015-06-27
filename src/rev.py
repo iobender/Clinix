@@ -4,14 +4,14 @@
 import clinix
 from collections import namedtuple
 
-TacSuccess = namedtuple('TacSuccess', 'file contents')
-TacError = namedtuple('TacError', 'file reason')
+RevSuccess = namedtuple('RevSuccess', 'file contents')
+RevError = namedtuple('RevError', 'file reason')
 
-class TacCommand(clinix.ClinixCommand):
+class RevCommand(clinix.ClinixCommand):
     """
-    class TacCommand(clinix.ClinixCommand)
+    class RevCommand(clinix.ClinixCommand)
 
-    Class to represent a tac command
+    Class to represent a rev command
     """
 
     def __init__(self, args, options):
@@ -19,7 +19,7 @@ class TacCommand(clinix.ClinixCommand):
         __init__(self, args, options)
 
         args is a list of files to output 
-        options is a dict of options to tac
+        options is a dict of options to rev
         """
 
         super().__init__(options)
@@ -34,41 +34,38 @@ class TacCommand(clinix.ClinixCommand):
 
         pass
 
-    def tac_one(self, filename):
+    def rev_one(self, filename):
         """
-        tac_one(self, filename)
+        rev_one(self, filename)
 
-        tac's a single file
-        returns either TacSuccess or TacError
+        rev's a single file
+        returns either RevSuccess or RevError
         """
 
         try:
             with open(filename) as f:
-                lines = f.read().splitlines()
-                lines = self.tac_lines(lines)
-                return TacSuccess(filename, '\n'.join(lines))
+                lines = self.rev_lines(f.read().splitlines())
+                return RevSuccess(filename, '\n'.join(lines))
         except IOError as e:
-            return TacError(filename, e.strerror)
+            return RevError(filename, e.strerror)
 
-    def tac_lines(self, lines):
+    def rev_lines(self, lines):
         """
-        tac_lines(self, lines)
+        rev_lines(self, lines)
 
-        tac's the given lines
-        takes a list and returns a list
+        takes a list of lines and returns a list of reversed lines
         """
+        lines = [''.join(reversed(line)) for line in lines]
+        return lines
 
-        return reversed(lines)
-
-    def tac_stdin(self):
+    def rev_stdin(self):
         """
-        tac_stdin(self)
+        rev_stdin(self):
 
-        tac's stdin
-        Currently always returns TacSuccess
+        rev's stdin
+        currently always returns RevSuccess
         """
-
-        return TacSuccess('-', '\n'.join(self.tac_lines(self.read_stdin().splitlines())))
+        return RevSuccess('-', '\n'.join(self.rev_lines(self.read_stdin().splitlines())))
 
     def eval(self):
         """
@@ -77,11 +74,10 @@ class TacCommand(clinix.ClinixCommand):
         returns a Python representation of the result of this command
         for echo, just return's its arguments
         """
-
         if self.filenames:
-            return [self.tac_one(f) for f in self.filenames]
+            return [self.rev_one(f) for f in self.filenames]
         else:
-            return [self.tac_stdin()]
+            return [self.rev_stdin()]
 
     def __str__(self):
         """
@@ -92,18 +88,18 @@ class TacCommand(clinix.ClinixCommand):
         """
         
         def singlestr(arg):
-            if isinstance(arg, TacSuccess):
+            if isinstance(arg, RevSuccess):
                 return arg.contents
-            elif isinstance(arg, TacError):
+            elif isinstance(arg, RevError):
                 return arg.file + ': ' + arg.reason
             else:
-                raise Exception("Don't know how to handle tac result " + arg.__class__.__name__)
+                raise Exception("Don't know how to handle rev result " + arg.__class__.__name__)
 
         return '\n'.join(singlestr(arg) for arg in self.eval())
 
-def tac(*args, **options):
+def rev(*args, **options):
     """
-    tac(*args, **options)
+    rev(*args, **options)
 
     outputs the contents of the passed files
 
@@ -112,4 +108,4 @@ def tac(*args, **options):
 
     """
 
-    return TacCommand(args, options)
+    return RevCommand(args, options)

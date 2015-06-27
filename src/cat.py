@@ -45,15 +45,33 @@ class CatCommand(clinix.ClinixCommand):
         try:
             with open(filename) as f:
                 lines = f.read().splitlines()
-                if self.number:
-                    lines = list(enumerate(lines, 1))
-                    max_num_len = len(str(len(lines))) # longest length of any number (e.g. 482 -> 3)
-                    # 4 spaces, then line number padded with spaces on left, then 2 spaces, then actual line
-                    lines = [str(linenum).rjust(4 + max_num_len) + '  ' + line for linenum, line in lines]
+                lines = self.cat_lines(lines)
                 return CatSuccess(filename, '\n'.join(lines))
         except IOError as e:
             return CatError(filename, e.strerror)
 
+    def cat_lines(self, lines):
+        """
+        cat_lines(self, lines)
+
+        returns the given lines, possibly modified based on the options to cat
+        """
+        if self.number:
+            lines = list(enumerate(lines, 1))
+            max_num_len = len(str(len(lines))) # longest length of any number (e.g. 482 -> 3)
+            # 4 spaces, then line number padded with spaces on left, then 2 spaces, then actual line
+            lines = [str(linenum).rjust(4 + max_num_len) + '  ' + line for linenum, line in lines]
+        return lines
+
+    def cat_stdin(self):
+        """
+        cat_stdin(self)
+
+        cat's stdin
+        Currently always returns CatSucess
+        """
+
+        return CatSuccess('-', '\n'.join(self.cat_lines(self.read_stdin().splitlines())))
 
     def eval(self):
         """
@@ -62,8 +80,11 @@ class CatCommand(clinix.ClinixCommand):
         returns a Python representation of the result of this command
         for echo, just return's its arguments
         """
-
-        return [self.cat_one(f) for f in self.filenames]
+    
+        if self.filenames:
+            return [self.cat_one(f) for f in self.filenames]
+        else:
+            return [self.cat_stdin()]
 
     def __str__(self):
         """
