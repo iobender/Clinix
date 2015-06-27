@@ -30,6 +30,15 @@ class EchoCommand(clinix.ClinixCommand):
 
         pass
 
+    def do(self):
+        """
+        do(self)
+
+        returns a Python representation of the result of this command
+        for echo, just return's its arguments
+        """
+        return self.args
+
     def __str__(self):
         """
         __str__(self)
@@ -38,7 +47,7 @@ class EchoCommand(clinix.ClinixCommand):
         although each object may take up more than one line
         """
 
-        return '\n'.join(str(arg) for arg in self.args)
+        return '\n'.join(str(arg) for arg in self.do())
 
 def echo(*args, **options):
     """

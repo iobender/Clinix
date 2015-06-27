@@ -25,7 +25,7 @@ class GrepCommand(clinix.ClinixCommand):
         """
 
         super().__init__(options)
-        self._compile_pattern(pattern)
+        self.compile_pattern(pattern)
         self.filenames = args
 
     def parse_options(self, options):
@@ -60,9 +60,9 @@ class GrepCommand(clinix.ClinixCommand):
         """
         if self.filenames:
             for filename in self.filenames:
-                yield from self._grep_file(filename)
+                yield from self.grep_file(filename)
         else:
-            yield from self._grep_stdin()
+            yield from self.grep_stdin()
 
     def grep_file(self, filename):
         """
@@ -76,7 +76,7 @@ class GrepCommand(clinix.ClinixCommand):
             with open(filename) as file:
                 for linenum, line in enumerate(file, 1): # count line numbers from 1
                     line = line.rstrip('\n') # remove trailing newline
-                    for line in self._grep_line(line):
+                    for line in self.grep_line(line):
                         yield GrepSuccess(filename, line, linenum)
         except IOError as e:
             yield GrepError(filename, e.strerror)
@@ -87,8 +87,18 @@ class GrepCommand(clinix.ClinixCommand):
 
     def grep_stdin(self):
         for linenum, line in enumerate(self.read_stdin().splitlines()):
-            for line in self._grep_line(line):
+            for line in self.grep_line(line):
                 yield GrepSuccess('<stdin>', line, linenum)
+
+    def do(self):
+        """
+        do(self)
+
+        Returns a Python representation of the output of this command
+
+        Returns a list of GrepSuccess and GrepError objects
+        """
+        return self.grep_all()
 
     def __str__(self):
         """
@@ -111,8 +121,7 @@ class GrepCommand(clinix.ClinixCommand):
             else:
                 raise Exception("Don't know how to handle grep result " + arg.__class__.__name__)
 
-        result = self._grep_all()
-        return '\n'.join(singlestr(arg) for arg in result)
+        return '\n'.join(singlestr(arg) for arg in self.do())
 
 def grep(pattern, *args, **options):
     """

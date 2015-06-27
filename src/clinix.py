@@ -62,7 +62,7 @@ class ClinixCommand:
         self.stdin = InputType('stdin', sys.stdin)
         self.stdout = sys.stdout
         self.stderr = sys.stderr
-        self._parse_options(options)
+        self.parse_options(options)
 
     def parse_options(self, options):
         """
