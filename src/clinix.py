@@ -227,6 +227,8 @@ def expand_file(filename, expandglob=True, recurse=False):
 
     if expandglob and ('*' in filename or '?' in filename): # prevent non-globs from trying to be expanded
         filenames = glob.glob(filename)
+        if not filenames: 
+            filenames = [filename]
     else:
         filenames = [filename]
     if recurse:
