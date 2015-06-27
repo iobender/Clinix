@@ -2,7 +2,7 @@
 
 import __main__
 import sys
-from collections import namedtuple
+from collections import namedtuple, Iterable
 
 InputType = namedtuple('InputType', 'type source')
 
@@ -181,8 +181,8 @@ class ClinixCommand:
                 raise Exception('Error reading file ' + infile + ': ' + e.strerror)
         elif self.stdin.type == 'pipe':
             source = self.stdin.source
-            if isinstance(source, list) and not isinstance(source, str):
-                source = '\n'.join(source)
+            if isinstance(source, Iterable) and not isinstance(source, str):
+                source = '\n'.join(str(s) for s in source)
             return str(source)
         else:
             raise Exception('Unknown stdin type: ' + self.stdin.type)
