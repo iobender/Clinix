@@ -36,9 +36,9 @@ class GrepCommand(clinix.ClinixCommand):
         valid options are i, ignorecase, n, and linenumber
         """
 
-        self.ignorecase = options.get('i', False) or options.get('ignorecase', False)
-        self.linenumber = options.get('n', False) or options.get('linenumber', False)
-        self.invertmatch = options.get('v', False) or options.get('invertmatch', False)
+        self.ignorecase = options.get('ignorecase', False) or options.get('i', False)
+        self.linenumber = options.get('linenumber', False) or options.get('n', False)
+        self.invertmatch = options.get('invertmatch', False) or options.get('v', False)
 
     def compile_pattern(self, pattern):
         """
