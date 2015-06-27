@@ -44,13 +44,13 @@ class CatCommand(clinix.ClinixCommand):
 
         try:
             with open(filename) as f:
-                contents = f.read()
+                lines = f.read().splitlines()
                 if self.number:
-                    lines = list(enumerate(contents.splitlines(), 1))
+                    lines = list(enumerate(lines, 1))
                     max_num_len = len(str(len(lines))) # longest length of any number (e.g. 482 -> 3)
                     # 4 spaces, then line number padded with spaces on left, then 2 spaces, then actual line
-                    contents = '\n'.join(str(linenum).rjust(4 + max_num_len) + '  ' + line for linenum, line in lines)
-                return CatSuccess(filename, contents)
+                    lines = [str(linenum).rjust(4 + max_num_len) + '  ' + line for linenum, line in lines]
+                return CatSuccess(filename, '\n'.join(lines))
         except IOError as e:
             return CatError(filename, e.strerror)
 
