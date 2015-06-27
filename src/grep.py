@@ -90,9 +90,9 @@ class GrepCommand(clinix.ClinixCommand):
             for line in self.grep_line(line):
                 yield GrepSuccess('<stdin>', line, linenum)
 
-    def do(self):
+    def eval(self):
         """
-        do(self)
+        eval(self)
 
         Returns a Python representation of the output of this command
 
@@ -121,7 +121,7 @@ class GrepCommand(clinix.ClinixCommand):
             else:
                 raise Exception("Don't know how to handle grep result " + arg.__class__.__name__)
 
-        return '\n'.join(singlestr(arg) for arg in self.do())
+        return '\n'.join(singlestr(arg) for arg in self.eval())
 
 def grep(pattern, *args, **options):
     """

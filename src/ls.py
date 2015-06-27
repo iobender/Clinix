@@ -53,9 +53,9 @@ class LsCommand(clinix.ClinixCommand):
         else:
             raise Exception(arg + ': no such file or directory')
 
-    def do(self):
+    def eval(self):
         """
-        do(self)
+        eval(self)
 
         Returns a Python representation of the output of this command
 
@@ -80,7 +80,7 @@ class LsCommand(clinix.ClinixCommand):
             elif arg[0] == 'directory':
                 return arg[1] + ':\n\t' + '\n\t'.join(arg[2])
 
-        return '\n'.join(singlestr(arg) for arg in self.do())
+        return '\n'.join(singlestr(arg) for arg in self.eval())
 
 def ls(*args, **options):
     """
