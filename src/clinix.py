@@ -10,9 +10,8 @@ InputType = namedtuple('InputType', 'type source')
 
 class ClinixCommand:
     """
-    class ClinixCommand
-
     This class represents a command
+
     Creating one does not mean executing the command, so one could
     craft a certain command and save it to a variable and run it
     over and over
@@ -53,9 +52,8 @@ class ClinixCommand:
     
     def __init__(self, options):
         """
-        __init__(self, options)
-
         Create a new ClinixCommand, with the given options as a dict
+
         Set the commands stdin, stdout, and stderr
         And call _parse_options to set the command's options, which should
         be handled by the subclass that invoked this
@@ -68,9 +66,8 @@ class ClinixCommand:
 
     def parse_options(self, options):
         """
-        _parse_options(self, options)
-
         Interprets the options dict passed as keyword args to this command
+
         Should throw an error if an unrecognized option is given
         """
 
@@ -78,8 +75,6 @@ class ClinixCommand:
 
     def __gt__(self, new_stdout):
         """
-        __gt__(self, new_stdout)
-
         >>> comm() > 'file.txt'
 
         Redirects the stdout of this command to new_stdout
@@ -96,8 +91,6 @@ class ClinixCommand:
 
     def __ge__(self, new_stdout):
         """
-        __ge__(self, new_stdout)
-
         >>> comm() >= 'file.txt'
 
         Redirects the stdout of this command to new_stdout
@@ -120,9 +113,7 @@ class ClinixCommand:
 
     def __lt__(self, source):
         """
-        __lt__(self, source)
-
-        comm() < 'input.txt'
+        >>> comm() < 'input.txt'
 
         Sets source to be this commands stdin. source should be a filename
         The file will not be opened and read until the command is evaluated
@@ -133,9 +124,8 @@ class ClinixCommand:
 
     def __or__(self, source):
         """
-        __or__(self, source)
-
         Only implemented because Python won't call __ror__ if two operands are of the same type
+
         All the logic occurs in __ror__
         """
 
@@ -143,12 +133,9 @@ class ClinixCommand:
 
     def __ror__(self, source):
         """
-        __ror__(self, source)
-
-        Implements piping of commands. When comm1 is piped to comm2 like:
-
         >>> comm1() | comm2() 
 
+        Implements piping of commands. When comm1 is piped to comm2 like:
         Then comm2's __ror__ is invoked (ClinixCommands should not implement __or__)
         The input source of comm2 is set to be comm1, and comm2 is returned. 
 
@@ -165,9 +152,8 @@ class ClinixCommand:
 
     def read_stdin(self):
         """
-        read_stdin(self)
-
         Gets the value of this commands stdin
+
         If it is actually stdin, just reads from stdin
         If we have been piped to, call str on the input source and use those lines
             (if a list was piped to use, call str on its elements and join with newlines)
@@ -191,9 +177,8 @@ class ClinixCommand:
 
     def do(self):
         """
-        do(self)
-
         Forces execution of this command. This should be a repeatable operation.
+
         Writes to the proper output channel as well
         calls __str__ on itself to determine what to write
         """
@@ -210,9 +195,8 @@ class ClinixCommand:
 
     def __repr__(self):
         """
-        __repr__(self)
-
         Forces execution of this command, and returns empty string
+
         (yes I know this is abuse of __repr__ but that's what it took
         to make this work in the REPL and in programs)
         """
@@ -222,9 +206,8 @@ class ClinixCommand:
 
 def expand_files(*filenames, **kwargs):
     """
-    expand_files(*filenames, **kwargs)
-    
     utility function for expanding a list of given files 
+
     globs can be expanded, and directories can be reversed on
     options with defaults:
         expandglob=True
@@ -239,8 +222,6 @@ def expand_files(*filenames, **kwargs):
 
 def expand_file(filename, expandglob=True, recurse=False):
     """
-    expand_file(filename, expandglob=True, recurse=False)
-
     expands a single filename by glob or recursing
     """
 
@@ -256,8 +237,6 @@ def expand_file(filename, expandglob=True, recurse=False):
 
 def recurse_files(filenames):
     """
-    recurse_files(filenames)
-
     expands to all files and directories under the given directories
 
     for each file given, just yields that file
@@ -269,13 +248,12 @@ def recurse_files(filenames):
 
 def recurse_file(filename):
     """
-    recuse_file(filename)
-
     expands to all files and directories under the given directory
     
     if a file is given, just yields that file
     if a directory is given, yields each file and directory in the given directory
     """
+
     yield filename # os.walk doesn't yield the given file/dir
     for path, dirs, files in os.walk(filename):
         for d in dirs:

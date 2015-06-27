@@ -10,15 +10,11 @@ GrepError = namedtuple('GrepError', 'file reason')
 
 class GrepCommand(clinix.ClinixCommand):
     """
-    class GrepCommand(ClinixCommand)
-
     reprsents a grep command
     """
 
     def __init__(self, pattern, args, options):
         """
-        __init__(self, pattern, args, options)
-
         pattern is a regular expression to search each line for
         args is a list of files to search
         options is a dict of options to grep
@@ -30,9 +26,8 @@ class GrepCommand(clinix.ClinixCommand):
 
     def parse_options(self, options):
         """
-        _parse_options(self, options)
-
         processes options to grep
+
         valid options are i, ignorecase, n, and linenumber
         """
 
@@ -42,8 +37,6 @@ class GrepCommand(clinix.ClinixCommand):
 
     def compile_pattern(self, pattern):
         """
-        _compile_pattern(self, pattern)
-
         compiles the given regex pattern, considering the options given
         """
 
@@ -54,10 +47,9 @@ class GrepCommand(clinix.ClinixCommand):
 
     def grep_all(self):
         """
-        _grep_all(self)
-
         yields each match from each file provided, or stdin if none provided
         """
+
         if self.filenames:
             for filename in self.filenames:
                 yield from self.grep_file(filename)
@@ -66,12 +58,12 @@ class GrepCommand(clinix.ClinixCommand):
 
     def grep_file(self, filename):
         """
-        _grep_file(self, filename)
-
         tries to open filename, and yields all matching lines
+
         with some info about the lines
         if the file couldn't be opened, returns an error
         """
+
         try:
             with open(filename) as file:
                 for linenum, line in enumerate(file, 1): # count line numbers from 1
@@ -82,28 +74,33 @@ class GrepCommand(clinix.ClinixCommand):
             yield GrepError(filename, e.strerror)
 
     def grep_line(self, line):
+        """
+        returns matches found in a single line
+        """
+
         if bool(re.search(self.pattern, line)) ^ self.invertmatch:
             yield line
 
     def grep_stdin(self):
+        """
+        reads stdin and yields matches found
+        """
+
         for linenum, line in enumerate(self.read_stdin().splitlines()):
             for line in self.grep_line(line):
                 yield GrepSuccess('<stdin>', line, linenum)
 
     def eval(self):
         """
-        eval(self)
-
         Returns a Python representation of the output of this command
 
         Returns a list of GrepSuccess and GrepError objects
         """
+
         return self.grep_all()
 
     def __str__(self):
         """
-        __str__(self)
-
         Returns the output of this grep command
         matches are printed on their own line, possibly with some ifo depending on the optoins given
         errors are reported with the filename and the error
@@ -125,8 +122,6 @@ class GrepCommand(clinix.ClinixCommand):
 
 def grep(pattern, *args, **options):
     """
-    grep(pattern, *args, **options)
-
     searches the given files for the given pattern
 
     pattern is a regular expression interpretted by Python's re module

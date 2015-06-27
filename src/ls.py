@@ -6,15 +6,11 @@ import os
 
 class LsCommand(clinix.ClinixCommand):
     """
-    class LsCommand(clinix.ClinixCommand)
-
     Class to represent an ls command
     """
 
     def __init__(self, args, options):
         """
-        __init__(self, args, options)
-
         args is a list of files and directories to process
         if files are given, use . (the current directory) as the only arg
         options is a dict of options to ls
@@ -28,8 +24,6 @@ class LsCommand(clinix.ClinixCommand):
 
     def parse_options(self, options):
         """
-        _parse_options(self, options)
-
         parses the options given to ls
         """
 
@@ -37,9 +31,8 @@ class LsCommand(clinix.ClinixCommand):
 
     def ls_one(self, arg):
         """
-        _ls_one(self, arg)
-
         Processes a single argument to ls
+
         arg can be either a file or directory
         if it is a file, just list the file
         if it is a dir, list all the files and directories in it
@@ -55,8 +48,6 @@ class LsCommand(clinix.ClinixCommand):
 
     def eval(self):
         """
-        eval(self)
-
         Returns a Python representation of the output of this command
 
         Returns a list of tuples about files and directories
@@ -66,9 +57,8 @@ class LsCommand(clinix.ClinixCommand):
 
     def __str__(self):
         """
-        __str__(self)
-
         Returns the output from this ls command
+
         files are printed by their names
         diretcories are printed by their name and then
         everything within them 
@@ -84,8 +74,6 @@ class LsCommand(clinix.ClinixCommand):
 
 def ls(*args, **options):
     """
-    ls(*args, **options)
-
     lists directory contents
 
     args should be a list of files/directories to process

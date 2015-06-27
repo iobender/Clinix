@@ -1,5 +1,5 @@
-# echo.py
-# emulates the echo tool
+# tac.py
+# emulates the tac tool
 
 import clinix
 from collections import namedtuple
@@ -9,15 +9,11 @@ TacError = namedtuple('TacError', 'file reason')
 
 class TacCommand(clinix.ClinixCommand):
     """
-    class TacCommand(clinix.ClinixCommand)
-
     Class to represent a tac command
     """
 
     def __init__(self, args, options):
         """
-        __init__(self, args, options)
-
         args is a list of files to output 
         options is a dict of options to tac
         """
@@ -27,18 +23,15 @@ class TacCommand(clinix.ClinixCommand):
 
     def parse_options(self, options):
         """
-        _parse_options(self, options)
-
-        parses the options given to echo
+        parses the options given to tac
         """
 
         pass
 
     def tac_one(self, filename):
         """
-        tac_one(self, filename)
-
         tac's a single file
+
         returns either TacSuccess or TacError
         """
 
@@ -52,9 +45,8 @@ class TacCommand(clinix.ClinixCommand):
 
     def tac_lines(self, lines):
         """
-        tac_lines(self, lines)
-
         tac's the given lines
+
         takes a list and returns a list
         """
 
@@ -62,9 +54,8 @@ class TacCommand(clinix.ClinixCommand):
 
     def tac_stdin(self):
         """
-        tac_stdin(self)
-
         tac's stdin
+
         Currently always returns TacSuccess
         """
 
@@ -72,10 +63,9 @@ class TacCommand(clinix.ClinixCommand):
 
     def eval(self):
         """
-        eval(self)
-
         returns a Python representation of the result of this command
-        for echo, just return's its arguments
+
+        for tac, return the output of the given files, with the order of lines reversed
         """
 
         if self.filenames:
@@ -85,10 +75,7 @@ class TacCommand(clinix.ClinixCommand):
 
     def __str__(self):
         """
-        __str__(self)
-
-        Outputs each of the args given to echo, one per line,
-        although each object may take up more than one line
+        Outputs the given files with their line orders reversed
         """
         
         def singlestr(arg):
@@ -103,11 +90,9 @@ class TacCommand(clinix.ClinixCommand):
 
 def tac(*args, **options):
     """
-    tac(*args, **options)
+    outputs the contents of the passed files, with line order reversed
 
-    outputs the contents of the passed files
-
-    options is a dict of options to echo
+    options is a dict of options to tac
     Valid options (with defaults):
 
     """

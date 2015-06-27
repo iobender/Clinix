@@ -1,5 +1,5 @@
-# echo.py
-# emulates the echo tool
+# cat.py
+# emulates the cat tool
 
 import clinix
 from collections import namedtuple
@@ -9,15 +9,11 @@ CatError = namedtuple('CatError', 'file reason')
 
 class CatCommand(clinix.ClinixCommand):
     """
-    class CatCommand(clinix.ClinixCommand)
-
     Class to represent a cat command
     """
 
     def __init__(self, args, options):
         """
-        __init__(self, args, options)
-
         args is a list of files to output 
         options is a dict of options to cat
         """
@@ -27,18 +23,15 @@ class CatCommand(clinix.ClinixCommand):
 
     def parse_options(self, options):
         """
-        _parse_options(self, options)
-
-        parses the options given to echo
+        parses the options given to cat
         """
 
         self.number = options.get('number', False) or options.get('n', False)
 
     def cat_one(self, filename):
         """
-        cat_one(self, filename)
-
         cat's a single file
+
         returns either CatSuccess or CatError
         """
 
@@ -52,8 +45,6 @@ class CatCommand(clinix.ClinixCommand):
 
     def cat_lines(self, lines):
         """
-        cat_lines(self, lines)
-
         returns the given lines, possibly modified based on the options to cat
         """
         if self.number:
@@ -65,9 +56,8 @@ class CatCommand(clinix.ClinixCommand):
 
     def cat_stdin(self):
         """
-        cat_stdin(self)
-
         cat's stdin
+
         Currently always returns CatSucess
         """
 
@@ -75,10 +65,7 @@ class CatCommand(clinix.ClinixCommand):
 
     def eval(self):
         """
-        eval(self)
-
         returns a Python representation of the result of this command
-        for echo, just return's its arguments
         """
     
         if self.filenames:
@@ -88,10 +75,7 @@ class CatCommand(clinix.ClinixCommand):
 
     def __str__(self):
         """
-        __str__(self)
-
-        Outputs each of the args given to echo, one per line,
-        although each object may take up more than one line
+        Outputs each of the files given to cat
         """
         
         def singlestr(arg):
@@ -106,11 +90,9 @@ class CatCommand(clinix.ClinixCommand):
 
 def cat(*args, **options):
     """
-    cat(*args, **options)
-
     outputs the contents of the passed files
 
-    options is a dict of options to echo
+    options is a dict of options to cat
     Valid options (with defaults):
         n=False, number=False:
             output line numbers as well

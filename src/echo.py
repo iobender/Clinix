@@ -5,15 +5,11 @@ import clinix
 
 class EchoCommand(clinix.ClinixCommand):
     """
-    class EchoCommand(clinix.ClinixCommand)
-
     Class to represent an echo command
     """
 
     def __init__(self, args, options):
         """
-        __init__(self, args, options)
-
         args is a list of things to output (any object is fine, not just strings)
         options is a dict of options to echo
         """
@@ -23,8 +19,6 @@ class EchoCommand(clinix.ClinixCommand):
 
     def parse_options(self, options):
         """
-        _parse_options(self, options)
-
         parses the options given to echo
         """
 
@@ -32,18 +26,16 @@ class EchoCommand(clinix.ClinixCommand):
 
     def eval(self):
         """
-        eval(self)
-
         returns a Python representation of the result of this command
+
         for echo, just return's its arguments
         """
         return self.args
 
     def __str__(self):
         """
-        __str__(self)
-
         Outputs each of the args given to echo, one per line,
+
         although each object may take up more than one line
         """
 
@@ -51,8 +43,6 @@ class EchoCommand(clinix.ClinixCommand):
 
 def echo(*args, **options):
     """
-    echo(*args, **options)
-
     echoes a string representation of each of its arguments, 1 per line
 
     options is a dict of options to echo
